@@ -8,3 +8,6 @@ Overview of ML (Assignment 1) can be found [here](Overview of ML.pdf).
 Short document for Portfolio Component 1: Data Exploration [here](PortfolioComponent1DataExploration.pdf).
 
 Code for Portfolio Component 1: Data Exploration [here](main.cpp).
+
+Portfolio Part 3: Linear Models is separated into two pdfs one for Classification found [here](Classification.pdf).
+and Regression found [here](Regression.pdf).
