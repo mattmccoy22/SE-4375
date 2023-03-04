@@ -108,6 +108,7 @@ double range(vector<double> vector1) {
 }
 
 double median(vector<double> vector1) {
+
     double med;
 
     med = vector1[vector1.size()/2 - 1];
@@ -116,6 +117,7 @@ double median(vector<double> vector1) {
 }
 
 double mean(vector<double> vector1) {
+
     double mn;
 
     mn = sum(vector1)/vector1.size();
@@ -124,6 +126,7 @@ double mean(vector<double> vector1) {
 }
 
 double sum(vector<double> vector1) {
+
     double total = 0;
 
     for(int i = 0; i < numObservations; i++){
