@@ -3,7 +3,7 @@ Class Work
 
 Here you will find some codes and stuffs.
 
-Overview of ML (Assignment 1) can be found [here](Overview of ML.pdf).
+Overview of ML (Assignment 1) can be found [here](Overview_of_ML.pdf).
 
 Short document for Portfolio Component 1: Data Exploration [here](PortfolioComponent1DataExploration.pdf).
 
