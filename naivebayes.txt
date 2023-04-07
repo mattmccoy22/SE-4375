@@ -1,0 +1,115 @@
+#include <iostream>
+#include <vector>
+#include <unordered_map>
+#include <algorithm>
+#include <cmath>
+
+class Observation {
+public:
+    std::vector<double> features;
+    int target;
+};
+
+class NaiveBayes {
+public:
+    void fit(const std::vector<Observation>& data) {
+        std::unordered_map<int, int> targetCounts;
+        for (const auto& obs : data) {
+            ++targetCounts[obs.target];
+        }
+
+        for (const auto& [target, count] : targetCounts) {
+            priors_[target] = static_cast<double>(count) / data.size();
+        }
+
+        for (const auto& obs : data) {
+            const int target = obs.target;
+            const double x = obs.features[2];
+            sums_[target] += x;
+            sumsSq_[target] += x * x;
+            ++counts_[target];
+        }
+
+        for (const auto& [target, count] : counts_) {
+            const double n = static_cast<double>(count);
+            means_[target] = sums_[target] / n;
+            variances_[target] = (sumsSq_[target] - sums_[target] * sums_[target] / n) / (n - 1);
+            stddevs_[target] = std::sqrt(variances_[target]);
+        }
+
+        for (const auto& obs : data) {
+            const int target = obs.target;
+            for (int i = 0; i < 2; ++i) {
+                const double x = obs.features[i];
+                ++featureCounts_[i][target][x];
+                ++featureCounts_[i][target]["total"];
+            }
+            ++totalCounts_[target];
+        }
+
+        for (int i = 0; i < 2; ++i) {
+            for (const auto& [target, count] : totalCounts_) {
+                const int n = featureCounts_[i][target]["total"];
+                for (auto& [value, valueCount] : featureCounts_[i][target]) {
+                    if (value != "total") {
+                        probabilities_[i][target][value] = static_cast<double>(valueCount) / n;
+                    }
+                }
+            }
+        }
+    }
+
+    int predict(const Observation& obs) {
+        std::unordered_map<int, double> scores;
+        for (const auto& [target, prior] : priors_) {
+            scores[target] = std::log(prior);
+            for (int i = 0; i < 2; ++i) {
+                const double x = obs.features[i];
+                const auto& probs = probabilities_[i][target];
+                const double logProb = std::log(probs.at(x));
+                scores[target] += logProb;
+            }
+            const double x = obs.features[2];
+            const double mean = means_[target];
+            const double stddev = stddevs_[target];
+            const double likelihood = 1.0 / (stddev * std::sqrt(2.0 * M_PI)) * std::exp(-(x - mean) * (x - mean) / (2.0 * stddev * stddev));
+            scores[target] += std::log(likelihood);
+        }
+        auto maxScoreIt = std::max_element(scores.begin(), scores.end(),
+                                           [](const auto& p1, const auto& p2) { return p1.second < p2.second; });
+        return maxScoreIt->first;
+    }
+
+private:
+    std::unordered_map<int, double> priors_;
+    std::unordered_map<int, double> means_;
+    std::unordered_map<int, double> variances_;
+   std::unordered_map<int, double> stddevs_;
+std::unordered_map<int, double> sums_;
+std::unordered_map<int, double> sumsSq_;
+std::unordered_map<int, int> counts_;
+std::unordered_map<int, std::unordered_map<int, std::unordered_map<double, double>>> probabilities_;
+std::unordered_map<int, std::unordered_map<int, std::unordered_map<std::string, int>>> featureCounts_;
+std::unordered_map<int, int> totalCounts_;
+
+};
+
+int main() {
+std::vector<std::vector<double>> input = {{0, 1, 1}, {1, 0, 1}, {1, 1, 0}, {0, 0, 1}, {1, 0, 0}, {0, 1, 0}, {1, 1, 1}, {0, 0, 0}};
+std::vector<Observation> data;
+for (const auto& row : input) {
+Observation obs;
+obs.features = {row[0], row[1], row[2]};
+obs.target = static_cast<int>(row[1]);
+data.push_back(obs);
+}
+
+NaiveBayes classifier;
+classifier.fit(data);
+
+Observation obs;
+obs.features = {0, 1, 0.5};
+int prediction = classifier.predict(obs);
+std::cout << "Predicted target: " << prediction << std::endl;
+
+return 0;

@@ -1,0 +1,97 @@
+//
+// Created by mattm on 2/20/2023.
+//
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <vector>
+#include <string>
+
+using namespace std;
+
+void printColumnNames(const vector<string>& colnames) {
+    for (int i = 0; i < colnames.size(); i++) {
+        cout << colnames[i] << "\t";
+    }
+    cout << endl;
+}
+
+int countRows(const vector<vector<string>>& array) {
+    int rowCount = 0;
+    for (const auto& row : array) {
+        bool hasData = false;
+        for (const auto& cell : row) {
+            if (!cell.empty()) {
+                hasData = true;
+                break;
+            }
+        }
+        if (hasData) {
+            rowCount++;
+        }
+    }
+    return rowCount;
+}
+
+
+
+
+
+int main() {
+    ifstream file("C:\\Users\\mattm\\Documents\\GitHub\\SE-4375\\titanic_project.csv");
+
+    if (!file.is_open()) {
+        cout << "Failed to open file." << endl;
+        return 1;
+    }
+
+    vector<string> colnames;
+    vector<vector<string>> data;
+
+    string line, colname;
+
+    while (getline(file, line)) {
+        stringstream ss(line);
+        vector<string> row;
+
+        while (getline(ss, colname, ',')) {
+            row.push_back(colname);
+        }
+
+        data.push_back(row);
+    }
+
+    // Convert data to 2D array
+    string** array = new string*[data.size()];
+
+    for (int i = 0; i < data.size(); i++) {
+        array[i] = new string[data[i].size()];
+        for (int j = 0; j < data[i].size(); j++) {
+            array[i][j] = data[i][j];
+        }
+    }
+
+
+    // Print the data
+    printColumnNames(colnames);
+    for (int i = 0; i < data.size(); i++) {
+        for (int j = 0; j < data[i].size(); j++) {
+            cout << array[i][j] << "\t";
+        }
+        cout << endl;
+    }
+
+    // Print number of rows
+    int numRows = countRows(data);
+    cout << "Number of rows: " << numRows << endl;
+
+    // Free memory
+    for (int i = 0; i < data.size(); i++) {
+        delete[] array[i];
+    }
+    delete[] array;
+
+    return 0;
+}
+
+
