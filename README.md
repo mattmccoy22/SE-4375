@@ -18,3 +18,7 @@ Logistic Regression : [here](LogReg.cpp)
 Naive Bayes algorithms : [here](NaiveBayes.cpp)
                    
 Titanic data : [here](titanic_project.csv)
+
+Similarity and Ensemble: [here](Notebook1RegressionCS4375MMcCoy.pdf)
+
+ML with sklearn: [here](ML with sklearn.pdf)
